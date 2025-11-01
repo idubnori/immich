@@ -45,6 +45,7 @@
     imageClass?: ClassValue;
     brokenAssetClass?: ClassValue;
     dimmed?: boolean;
+    ownerName?: string;
     onClick?: (asset: TimelineAsset) => void;
     onSelect?: (asset: TimelineAsset) => void;
     onMouseEvent?: (event: { isMouseOver: boolean; selectedGroupIndex: number }) => void;
@@ -69,6 +70,7 @@
     imageClass = '',
     brokenAssetClass = '',
     dimmed = false,
+    ownerName = undefined,
   }: Props = $props();
 
   let {
@@ -258,6 +260,15 @@
         <!-- Dimmed support -->
         {#if dimmed && !mouseOver}
           <div id="a" class={['absolute h-full w-full bg-gray-700/40', { 'rounded-xl': selected }]}></div>
+        {/if}
+
+        <!-- Asset owner name -->
+        {#if !authManager.isSharedLink && ownerName}
+          <div class="absolute bottom-2 end-2 max-w-[50%]">
+            <p class="text-xs font-medium text-white drop-shadow-lg max-w-[100%] truncate">
+              {ownerName}
+            </p>
+          </div>
         {/if}
 
         <!-- Favorite asset star -->

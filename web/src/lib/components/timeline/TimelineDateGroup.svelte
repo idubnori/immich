@@ -13,6 +13,7 @@
   import { mdiCheckCircle, mdiCircleOutline } from '@mdi/js';
 
   import { fromTimelinePlainDate, getDateLocaleString } from '$lib/utils/timeline-util';
+  import type { AlbumResponseDto } from '@immich/sdk';
   import { Icon } from '@immich/ui';
   import { type Snippet } from 'svelte';
   import { flip } from 'svelte/animate';
@@ -29,6 +30,7 @@
     timelineManager: TimelineManager;
     assetInteraction: AssetInteraction;
     customLayout?: Snippet<[TimelineAsset]>;
+    album?: AlbumResponseDto | null;
 
     onSelect: ({ title, assets }: { title: string; assets: TimelineAsset[] }) => void;
     onSelectAssets: (asset: TimelineAsset) => void;
@@ -55,6 +57,7 @@
     assetInteraction,
     timelineManager,
     customLayout,
+    album = null,
     onSelect,
     onSelectAssets,
     onSelectAssetCandidates,
@@ -133,6 +136,16 @@
     });
     return getDateLocaleString(date);
   };
+
+  const getSharedAssetOwnerName = (album: AlbumResponseDto | null, asset: TimelineAsset): string | undefined => {
+    if (!album || !album.albumUsers || album.albumUsers.length === 0) {
+      return undefined;
+    }
+    if (album.owner.id === asset.ownerId) {
+      return album.owner.name;
+    }
+    return album.albumUsers.find((user) => user.user.id === asset.ownerId)?.user.name;
+  };
 </script>
 
 {#each filterIntersecting(monthGroup.dayGroups) as dayGroup, groupIndex (dayGroup.day)}
@@ -210,6 +223,7 @@
             {showArchiveIcon}
             {asset}
             {groupIndex}
+            ownerName={getSharedAssetOwnerName(album, asset)}
             onClick={(asset) => {
               if (typeof onThumbnailClick === 'function') {
                 onThumbnailClick(asset, timelineManager, dayGroup, _onClick);
