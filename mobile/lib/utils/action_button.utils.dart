@@ -69,9 +69,9 @@ enum ActionButtonType {
     return switch (this) {
       ActionButtonType.advancedInfo => context.advancedTroubleshooting,
       ActionButtonType.share => true,
-      ActionButtonType.edit => true,
-      //   !context.isInLockedView && //
-      //       context.asset.isImage,
+      ActionButtonType.edit =>
+        !context.isInLockedView && //
+            context.asset.isImage,
       ActionButtonType.shareLink =>
         !context.isInLockedView && //
             context.asset.hasRemote,
@@ -171,6 +171,7 @@ class ActionButtonBuilder {
 
   static const List<ActionButtonType> _defaultQuickActionSeed = [
     ActionButtonType.share,
+    ActionButtonType.upload,
     ActionButtonType.edit,
     ActionButtonType.archive,
     ActionButtonType.delete,
@@ -193,6 +194,7 @@ class ActionButtonBuilder {
     ActionButtonType.delete,
     ActionButtonType.removeFromAlbum,
     ActionButtonType.likeActivity,
+    ActionButtonType.upload,
   ];
 
   static List<ActionButtonType> parseQuickActionOrder(String? stored) {
@@ -327,6 +329,11 @@ class ActionButtonBuilder {
     if (type == ActionButtonType.archive && context.isArchived) {
       return ActionButtonType.unarchive;
     }
+
+    if (type == ActionButtonType.delete && context.asset.isLocalOnly) {
+      return ActionButtonType.deleteLocal;
+    }
+
     return type;
   }
 }
