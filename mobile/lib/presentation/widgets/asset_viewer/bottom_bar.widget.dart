@@ -12,7 +12,6 @@ import 'package:immich_mobile/providers/infrastructure/asset_viewer/current_asse
 import 'package:immich_mobile/providers/infrastructure/current_album.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/readonly_mode.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/setting.provider.dart';
-import 'package:immich_mobile/providers/infrastructure/viewer_quick_action_order.provider.dart';
 import 'package:immich_mobile/providers/routes.provider.dart';
 import 'package:immich_mobile/providers/server_info.provider.dart';
 import 'package:immich_mobile/providers/user.provider.dart';
@@ -40,9 +39,7 @@ class ViewerBottomBar extends ConsumerWidget {
     final isTrashEnabled = ref.watch(serverInfoProvider.select((state) => state.serverFeatures.trash));
     final currentAlbum = ref.watch(currentRemoteAlbumProvider);
     final advancedTroubleshooting = ref.watch(settingsProvider.notifier).get(Setting.advancedTroubleshooting);
-    final quickActionOrder = ref
-        .watch(viewerQuickActionOrderProvider)
-        .maybeWhen(data: (value) => value, orElse: () => ActionButtonBuilder.defaultQuickActionOrder);
+    final quickActionOrder = ref.watch(appSettingsServiceProvider).getViewerQuickActionOrder();
 
     if (!showControls) {
       opacity = 0;
@@ -76,7 +73,11 @@ class ViewerBottomBar extends ConsumerWidget {
           await showModalBottomSheet<List<ActionButtonType>>(
             context: context,
             isScrollControlled: true,
-            builder: (sheetContext) => ViewerQuickActionConfigurator(initialSelection: selection),
+            enableDrag: false,
+            builder: (sheetContext) => FractionallySizedBox(
+              heightFactor: 0.75,
+              child: ViewerQuickActionConfigurator(initialSelection: selection),
+            ),
           ).whenComplete(() {
             viewerNotifier.setBottomSheet(false);
           });
@@ -92,10 +93,6 @@ class ViewerBottomBar extends ConsumerWidget {
       }
 
       await appSettings.setViewerQuickActionOrder(updatedOrder);
-
-      if (context.mounted) {
-        ref.invalidate(viewerQuickActionOrderProvider);
-      }
     }
 
     final actions = quickActionTypes
