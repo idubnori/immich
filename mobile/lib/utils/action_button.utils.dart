@@ -179,6 +179,8 @@ class ActionButtonBuilder {
     ActionButtonType.likeActivity,
   ];
 
+  static final Set<ActionButtonType> _quickActionSet = Set<ActionButtonType>.unmodifiable(_defaultQuickActionSeed);
+
   static final List<ActionButtonType> defaultQuickActionOrder = List<ActionButtonType>.unmodifiable(
     _defaultQuickActionSeed,
   );
@@ -187,15 +189,7 @@ class ActionButtonBuilder {
       .map((type) => type.name)
       .join(quickActionStorageDelimiter);
 
-  static const List<ActionButtonType> viewerQuickActionOptions = [
-    ActionButtonType.edit,
-    ActionButtonType.share,
-    ActionButtonType.archive,
-    ActionButtonType.delete,
-    ActionButtonType.removeFromAlbum,
-    ActionButtonType.likeActivity,
-    ActionButtonType.upload,
-  ];
+  static List<ActionButtonType> get quickActionOptions => defaultQuickActionOrder;
 
   static List<ActionButtonType> parseQuickActionOrder(String? stored) {
     final parsed = <ActionButtonType>[];
@@ -235,24 +229,20 @@ class ActionButtonBuilder {
         ? defaultQuickActionOrder
         : normalizeQuickActionOrder(quickActionOrder);
 
-    final orderedTypes = <ActionButtonType>[];
-    final seen = <ActionButtonType>{};
+    final orderedTypes = <ActionButtonType>{};
 
     void addType(ActionButtonType type) {
-      if (!viewerQuickActionOptions.contains(type)) {
+      if (!_quickActionSet.contains(type)) {
         return;
       }
-      final resolved = _resolveQuickActionType(type, context);
-      if (seen.add(resolved)) {
-        orderedTypes.add(resolved);
-      }
+      orderedTypes.add(_resolveQuickActionType(type, context));
     }
 
     for (final type in prioritized) {
       addType(type);
     }
 
-    for (final type in viewerQuickActionOptions) {
+    for (final type in _defaultQuickActionSeed) {
       addType(type);
     }
 
@@ -301,28 +291,17 @@ class ActionButtonBuilder {
   }
 
   static List<ActionButtonType> normalizeQuickActionOrder(List<ActionButtonType> order) {
-    final result = <ActionButtonType>[];
-    final seen = <ActionButtonType>{};
+    final ordered = <ActionButtonType>{};
 
-    void add(ActionButtonType? type) {
-      if (type != null && viewerQuickActionOptions.contains(type) && seen.add(type)) {
-        result.add(type);
+    for (final type in order) {
+      if (_quickActionSet.contains(type)) {
+        ordered.add(type);
       }
     }
 
-    for (final type in order) {
-      add(type);
-    }
+    ordered.addAll(_defaultQuickActionSeed);
 
-    for (final type in _defaultQuickActionSeed) {
-      add(type);
-    }
-
-    for (final type in viewerQuickActionOptions) {
-      add(type);
-    }
-
-    return result;
+    return ordered.toList(growable: false);
   }
 
   static ActionButtonType _resolveQuickActionType(ActionButtonType type, ActionButtonContext context) {
@@ -336,4 +315,6 @@ class ActionButtonBuilder {
 
     return type;
   }
+
+  static bool isSupportedQuickAction(ActionButtonType type) => _quickActionSet.contains(type);
 }

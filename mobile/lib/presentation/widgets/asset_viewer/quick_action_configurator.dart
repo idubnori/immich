@@ -20,7 +20,7 @@ class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigu
   @override
   void initState() {
     super.initState();
-    _order = _mergeWithDefaults(widget.initialSelection);
+    _order = ActionButtonBuilder.normalizeQuickActionOrder(widget.initialSelection);
     _scrollController = ScrollController();
   }
 
@@ -28,30 +28,6 @@ class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigu
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-  }
-
-  List<ActionButtonType> _mergeWithDefaults(List<ActionButtonType> initial) {
-    final merged = <ActionButtonType>[];
-    final seen = <ActionButtonType>{};
-
-    void add(ActionButtonType type) {
-      if (!ActionButtonBuilder.viewerQuickActionOptions.contains(type)) {
-        return;
-      }
-      if (seen.add(type)) {
-        merged.add(type);
-      }
-    }
-
-    for (final type in ActionButtonBuilder.normalizeQuickActionOrder(initial)) {
-      add(type);
-    }
-
-    for (final type in ActionButtonBuilder.defaultQuickActionOrder) {
-      add(type);
-    }
-
-    return merged;
   }
 
   void _onReorder(ReorderedListFunction<ActionButtonType> reorder) {
