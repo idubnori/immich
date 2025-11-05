@@ -1024,8 +1024,13 @@ void main() {
 
       final decoded = ActionButtonBuilder.parseQuickActionOrder(encoded);
 
-      expect(decoded.first, ActionButtonType.edit);
-      expect(decoded.toSet().containsAll(ActionButtonType.values), isTrue);
+      final expectedOrder = ActionButtonBuilder.normalizeQuickActionOrder([
+        ActionButtonType.edit,
+        ActionButtonType.share,
+        ActionButtonType.archive,
+      ]);
+
+      expect(decoded, expectedOrder);
     });
 
     test('should build quick actions honoring custom order', () {
