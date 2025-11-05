@@ -120,12 +120,7 @@ class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigu
                     scrollController: gridController,
                     children: [
                       for (var i = 0; i < _order.length; i++)
-                        _QuickActionTile(
-                          key: ValueKey(_order[i].name),
-                          index: i,
-                          type: _order[i],
-                          isQuickAction: i < ActionButtonBuilder.defaultQuickActionLimit,
-                        ),
+                        _QuickActionTile(key: ValueKey(_order[i].name), index: i, type: _order[i]),
                     ],
                     builder: (children) => GridView.count(
                       controller: gridController,
@@ -165,20 +160,16 @@ class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigu
 class _QuickActionTile extends StatelessWidget {
   final int index;
   final ActionButtonType type;
-  final bool isQuickAction;
 
-  const _QuickActionTile({super.key, required this.index, required this.type, required this.isQuickAction});
+  const _QuickActionTile({super.key, required this.index, required this.type});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final borderColor = isQuickAction ? theme.colorScheme.primary : theme.dividerColor;
-    final backgroundColor = isQuickAction
-        ? theme.colorScheme.primary.withValues(alpha: 0.12)
-        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2);
-    final indicatorColor = isQuickAction
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurface.withValues(alpha: 0.6);
+    final borderColor = theme.dividerColor;
+    final backgroundColor = theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2);
+    final indicatorColor = theme.colorScheme.primary;
+    final accentColor = theme.colorScheme.onSurface.withValues(alpha: 0.7);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 2),
@@ -225,7 +216,7 @@ class _QuickActionTile extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: Text(
                 type.localizedLabel(context),
-                style: theme.textTheme.labelSmall,
+                style: theme.textTheme.labelSmall?.copyWith(color: accentColor),
                 textAlign: TextAlign.center,
                 maxLines: 3,
               ),
