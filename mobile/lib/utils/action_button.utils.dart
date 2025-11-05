@@ -240,8 +240,9 @@ class ActionButtonBuilder {
       if (!viewerQuickActionOptions.contains(type)) {
         return;
       }
-      if (seen.add(type)) {
-        orderedTypes.add(type);
+      final resolved = _resolveQuickActionType(type, context);
+      if (seen.add(resolved)) {
+        orderedTypes.add(resolved);
       }
     }
 
@@ -320,5 +321,12 @@ class ActionButtonBuilder {
     }
 
     return result;
+  }
+
+  static ActionButtonType _resolveQuickActionType(ActionButtonType type, ActionButtonContext context) {
+    if (type == ActionButtonType.archive && context.isArchived) {
+      return ActionButtonType.unarchive;
+    }
+    return type;
   }
 }
