@@ -90,7 +90,9 @@ class _ViewerQuickActionConfiguratorState extends ConsumerState<ViewerQuickActio
             Text('quick_actions_settings_title'.tr(), style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(
-              'quick_actions_settings_description'.tr(),
+              'quick_actions_settings_description'.tr(
+                namedArgs: {'count': ActionButtonBuilder.defaultQuickActionLimit.toString()},
+              ),
               style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
