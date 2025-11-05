@@ -6,17 +6,21 @@ part of 'viewer_quick_action_order.provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$viewerQuickActionOrderHash() => r'd539bc6ba5fae4fa07a7c30c42d9f6aee1488f97';
+String _$viewerQuickActionOrderHash() =>
+    r'd539bc6ba5fae4fa07a7c30c42d9f6aee1488f97';
 
 /// See also [ViewerQuickActionOrder].
 @ProviderFor(ViewerQuickActionOrder)
-final viewerQuickActionOrderProvider = NotifierProvider<ViewerQuickActionOrder, List<ActionButtonType>>.internal(
-  ViewerQuickActionOrder.new,
-  name: r'viewerQuickActionOrderProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product') ? null : _$viewerQuickActionOrderHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final viewerQuickActionOrderProvider =
+    NotifierProvider<ViewerQuickActionOrder, List<ActionButtonType>>.internal(
+      ViewerQuickActionOrder.new,
+      name: r'viewerQuickActionOrderProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$viewerQuickActionOrderHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
 typedef _$ViewerQuickActionOrder = Notifier<List<ActionButtonType>>;
 // ignore_for_file: type=lint
