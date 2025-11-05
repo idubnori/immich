@@ -76,7 +76,7 @@ class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigu
     const crossAxisCount = 4;
     const crossAxisSpacing = 12.0;
     const mainAxisSpacing = 12.0;
-    const tileHeight = 150.0;
+    const tileHeight = 130.0;
 
     return SafeArea(
       child: Padding(
@@ -190,6 +190,7 @@ class _QuickActionTile extends StatelessWidget {
           color: backgroundColor,
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -214,12 +215,12 @@ class _QuickActionTile extends StatelessWidget {
                 Icon(Icons.drag_indicator_rounded, size: 18, color: indicatorColor),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Align(
               alignment: Alignment.topCenter,
               child: Icon(type.iconData, size: 28, color: theme.colorScheme.onSurface),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Align(
               alignment: Alignment.topCenter,
               child: Text(
