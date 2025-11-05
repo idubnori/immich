@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:immich_mobile/constants/quick_actions.dart';
 import 'package:immich_mobile/constants/enums.dart';
 import 'package:immich_mobile/domain/models/album/album.model.dart';
 import 'package:immich_mobile/domain/models/asset/base_asset.model.dart';
@@ -167,7 +166,10 @@ enum ActionButtonType {
 class ActionButtonBuilder {
   static const List<ActionButtonType> _actionTypes = ActionButtonType.values;
   static const int defaultQuickActionLimit = 4;
-  static const List<ActionButtonType> viewerQuickActionOptions = [
+
+  static const String quickActionStorageDelimiter = ',';
+
+  static const List<ActionButtonType> _defaultQuickActionSeed = [
     ActionButtonType.edit,
     ActionButtonType.share,
     ActionButtonType.archive,
@@ -176,9 +178,22 @@ class ActionButtonBuilder {
     ActionButtonType.likeActivity,
   ];
 
-  static final List<ActionButtonType> defaultQuickActionOrder = List.unmodifiable(
-    parseQuickActionOrder(defaultQuickActionOrderStorageValue),
+  static final List<ActionButtonType> defaultQuickActionOrder = List<ActionButtonType>.unmodifiable(
+    _defaultQuickActionSeed,
   );
+
+  static final String defaultQuickActionOrderStorageValue = defaultQuickActionOrder
+      .map((type) => type.name)
+      .join(quickActionStorageDelimiter);
+
+  static const List<ActionButtonType> viewerQuickActionOptions = [
+    ActionButtonType.edit,
+    ActionButtonType.share,
+    ActionButtonType.archive,
+    ActionButtonType.delete,
+    ActionButtonType.removeFromAlbum,
+    ActionButtonType.likeActivity,
+  ];
 
   static List<ActionButtonType> parseQuickActionOrder(String? stored) {
     final parsed = <ActionButtonType>[];
@@ -296,8 +311,8 @@ class ActionButtonBuilder {
       add(type);
     }
 
-    for (final name in defaultQuickActionOrderNames) {
-      add(_typeByName(name));
+    for (final type in _defaultQuickActionSeed) {
+      add(type);
     }
 
     for (final type in viewerQuickActionOptions) {

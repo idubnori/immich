@@ -1,5 +1,4 @@
 import 'package:immich_mobile/constants/colors.dart';
-import 'package:immich_mobile/constants/quick_actions.dart';
 import 'package:immich_mobile/domain/models/store.model.dart';
 import 'package:immich_mobile/entities/store.entity.dart';
 import 'package:immich_mobile/utils/action_button.utils.dart';
@@ -75,14 +74,15 @@ class AppSettingsService {
   }
 
   List<ActionButtonType> getViewerQuickActionOrder() {
-    final stored = Store.get(StoreKey.viewerQuickActionOrder, defaultQuickActionOrderStorageValue);
+    final stored = Store.get(StoreKey.viewerQuickActionOrder, ActionButtonBuilder.defaultQuickActionOrderStorageValue);
     return ActionButtonBuilder.parseQuickActionOrder(stored);
   }
 
   Stream<List<ActionButtonType>> watchViewerQuickActionOrder() {
-    return Store.watch(
-      StoreKey.viewerQuickActionOrder,
-    ).map((value) => ActionButtonBuilder.parseQuickActionOrder(value ?? defaultQuickActionOrderStorageValue));
+    return Store.watch(StoreKey.viewerQuickActionOrder).map(
+      (value) =>
+          ActionButtonBuilder.parseQuickActionOrder(value ?? ActionButtonBuilder.defaultQuickActionOrderStorageValue),
+    );
   }
 
   Future<void> setViewerQuickActionOrder(List<ActionButtonType> order) {
