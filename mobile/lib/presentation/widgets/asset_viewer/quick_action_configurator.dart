@@ -51,14 +51,10 @@ class _ViewerQuickActionConfiguratorState extends ConsumerState<ViewerQuickActio
   Future<void> _save() async {
     final normalized = ActionButtonBuilder.normalizeQuickActionOrder(_order);
 
-    try {
-      await ref.read(viewerQuickActionOrderProvider.notifier).setOrder(normalized);
-      _hasLocalChanges = false;
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
-    } catch (_) {
-      // Surface the failure by keeping the sheet open. Caller will receive notifier error handling.
+    await ref.read(viewerQuickActionOrderProvider.notifier).setOrder(normalized);
+    _hasLocalChanges = false;
+    if (mounted) {
+      Navigator.of(context).pop();
     }
   }
 
