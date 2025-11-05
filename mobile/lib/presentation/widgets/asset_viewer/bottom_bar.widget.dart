@@ -7,7 +7,7 @@ import 'package:immich_mobile/domain/models/setting.model.dart';
 import 'package:immich_mobile/extensions/build_context_extensions.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/asset_viewer.state.dart';
 import 'package:immich_mobile/presentation/widgets/asset_viewer/quick_action_configurator.dart';
-import 'package:immich_mobile/providers/app_settings.provider.dart';
+import 'package:immich_mobile/providers/infrastructure/viewer_quick_action_order.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/asset_viewer/current_asset.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/current_album.provider.dart';
 import 'package:immich_mobile/providers/infrastructure/readonly_mode.provider.dart';
@@ -39,7 +39,7 @@ class ViewerBottomBar extends ConsumerWidget {
     final isTrashEnabled = ref.watch(serverInfoProvider.select((state) => state.serverFeatures.trash));
     final currentAlbum = ref.watch(currentRemoteAlbumProvider);
     final advancedTroubleshooting = ref.watch(settingsProvider.notifier).get(Setting.advancedTroubleshooting);
-    final quickActionOrder = ref.watch(appSettingsServiceProvider).getViewerQuickActionOrder();
+    final quickActionOrder = ref.watch(viewerQuickActionOrderProvider);
 
     if (!showControls) {
       opacity = 0;
@@ -64,8 +64,7 @@ class ViewerBottomBar extends ConsumerWidget {
 
     Future<void> openConfigurator() async {
       final viewerNotifier = ref.read(assetViewerProvider.notifier);
-      final selection = ActionButtonBuilder.normalizeQuickActionOrder(quickActionOrder);
-      final appSettings = ref.read(appSettingsServiceProvider);
+      final orderNotifier = ref.read(viewerQuickActionOrderProvider.notifier);
 
       viewerNotifier.setBottomSheet(true);
 
@@ -76,7 +75,7 @@ class ViewerBottomBar extends ConsumerWidget {
             enableDrag: false,
             builder: (sheetContext) => FractionallySizedBox(
               heightFactor: 0.75,
-              child: ViewerQuickActionConfigurator(initialSelection: selection),
+              child: ViewerQuickActionConfigurator(initialSelection: quickActionOrder),
             ),
           ).whenComplete(() {
             viewerNotifier.setBottomSheet(false);
@@ -92,7 +91,7 @@ class ViewerBottomBar extends ConsumerWidget {
         return;
       }
 
-      await appSettings.setViewerQuickActionOrder(updatedOrder);
+      await orderNotifier.setOrder(updatedOrder);
     }
 
     final actions = quickActionTypes
