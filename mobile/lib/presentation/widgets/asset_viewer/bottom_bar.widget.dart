@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:immich_mobile/constants/enums.dart';
@@ -64,34 +63,18 @@ class ViewerBottomBar extends ConsumerWidget {
 
     Future<void> openConfigurator() async {
       final viewerNotifier = ref.read(assetViewerProvider.notifier);
-      final orderNotifier = ref.read(viewerQuickActionOrderProvider.notifier);
 
       viewerNotifier.setBottomSheet(true);
 
-      final result =
-          await showModalBottomSheet<List<ActionButtonType>>(
-            context: context,
-            isScrollControlled: true,
-            enableDrag: false,
-            builder: (sheetContext) => FractionallySizedBox(
-              heightFactor: 0.75,
-              child: ViewerQuickActionConfigurator(initialSelection: quickActionOrder),
-            ),
-          ).whenComplete(() {
-            viewerNotifier.setBottomSheet(false);
-          });
-
-      if (result == null || result.isEmpty) {
-        return;
-      }
-
-      final updatedOrder = ActionButtonBuilder.normalizeQuickActionOrder(result);
-
-      if (listEquals(quickActionOrder, updatedOrder)) {
-        return;
-      }
-
-      await orderNotifier.setOrder(updatedOrder);
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        enableDrag: false,
+        builder: (sheetContext) =>
+            const FractionallySizedBox(heightFactor: 0.75, child: ViewerQuickActionConfigurator()),
+      ).whenComplete(() {
+        viewerNotifier.setBottomSheet(false);
+      });
     }
 
     final actions = quickActionTypes

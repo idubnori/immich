@@ -1,26 +1,28 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:immich_mobile/providers/infrastructure/viewer_quick_action_order.provider.dart';
 import 'package:immich_mobile/utils/action_button.utils.dart';
 import 'package:immich_mobile/utils/action_button_visuals.dart';
 
-class ViewerQuickActionConfigurator extends StatefulWidget {
-  final List<ActionButtonType> initialSelection;
-
-  const ViewerQuickActionConfigurator({super.key, required this.initialSelection});
+class ViewerQuickActionConfigurator extends ConsumerStatefulWidget {
+  const ViewerQuickActionConfigurator({super.key});
 
   @override
-  State<ViewerQuickActionConfigurator> createState() => _ViewerQuickActionConfiguratorState();
+  ConsumerState<ViewerQuickActionConfigurator> createState() => _ViewerQuickActionConfiguratorState();
 }
 
-class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigurator> {
+class _ViewerQuickActionConfiguratorState extends ConsumerState<ViewerQuickActionConfigurator> {
   late List<ActionButtonType> _order;
   late final ScrollController _scrollController;
+  bool _hasLocalChanges = false;
 
   @override
   void initState() {
     super.initState();
-    _order = ActionButtonBuilder.normalizeQuickActionOrder(widget.initialSelection);
+    _order = List<ActionButtonType>.from(ref.read(viewerQuickActionOrderProvider));
     _scrollController = ScrollController();
   }
 
@@ -33,18 +35,32 @@ class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigu
   void _onReorder(ReorderedListFunction<ActionButtonType> reorder) {
     setState(() {
       _order = reorder(_order);
+      _hasLocalChanges = true;
     });
   }
 
   void _resetToDefault() {
     setState(() {
       _order = List<ActionButtonType>.from(ActionButtonBuilder.defaultQuickActionOrder);
+      _hasLocalChanges = true;
     });
   }
 
   void _cancel() => Navigator.of(context).pop();
 
-  void _save() => Navigator.of(context).pop(_order);
+  Future<void> _save() async {
+    final normalized = ActionButtonBuilder.normalizeQuickActionOrder(_order);
+
+    try {
+      await ref.read(viewerQuickActionOrderProvider.notifier).setOrder(normalized);
+      _hasLocalChanges = false;
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } catch (_) {
+      // Surface the failure by keeping the sheet open. Caller will receive notifier error handling.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +69,12 @@ class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigu
     const crossAxisSpacing = 12.0;
     const mainAxisSpacing = 12.0;
     const tileHeight = 130.0;
+    final currentOrder = ref.watch(viewerQuickActionOrderProvider);
+    if (!_hasLocalChanges && !listEquals(_order, currentOrder)) {
+      _order = List<ActionButtonType>.from(currentOrder);
+    }
+    final normalizedSelection = ActionButtonBuilder.normalizeQuickActionOrder(_order);
+    final hasChanges = !listEquals(currentOrder, normalizedSelection);
 
     return SafeArea(
       child: Padding(
@@ -121,7 +143,7 @@ class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigu
                   children: [
                     TextButton(onPressed: _cancel, child: const Text('cancel').tr()),
                     const SizedBox(width: 8),
-                    FilledButton(onPressed: _save, child: const Text('done').tr()),
+                    FilledButton(onPressed: hasChanges ? _save : null, child: const Text('done').tr()),
                   ],
                 ),
               ],
