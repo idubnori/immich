@@ -165,8 +165,8 @@ enum ActionButtonType {
 
 class ActionButtonBuilder {
   static const List<ActionButtonType> _actionTypes = ActionButtonType.values;
-  static const int defaultQuickActionLimit = 4;
 
+  static const int defaultQuickActionLimit = 4;
   static const String quickActionStorageDelimiter = ',';
 
   static const List<ActionButtonType> _defaultQuickActionSeed = [
@@ -225,36 +225,24 @@ class ActionButtonBuilder {
     List<ActionButtonType>? quickActionOrder,
     int limit = defaultQuickActionLimit,
   }) {
-    final prioritized = quickActionOrder == null || quickActionOrder.isEmpty
-        ? defaultQuickActionOrder
-        : normalizeQuickActionOrder(quickActionOrder);
+    final normalized = normalizeQuickActionOrder(
+      quickActionOrder == null || quickActionOrder.isEmpty ? defaultQuickActionOrder : quickActionOrder,
+    );
 
-    final orderedTypes = <ActionButtonType>{};
-
-    void addType(ActionButtonType type) {
-      if (!_quickActionSet.contains(type)) {
-        return;
-      }
-      orderedTypes.add(_resolveQuickActionType(type, context));
-    }
-
-    for (final type in prioritized) {
-      addType(type);
-    }
-
-    for (final type in _defaultQuickActionSeed) {
-      addType(type);
-    }
-
+    final seen = <ActionButtonType>{};
     final result = <ActionButtonType>[];
 
-    for (final type in orderedTypes) {
-      if (!type.shouldShow(context)) {
+    for (final type in normalized) {
+      if (!_quickActionSet.contains(type)) {
         continue;
       }
 
-      result.add(type);
+      final resolved = _resolveQuickActionType(type, context);
+      if (!seen.add(resolved) || !resolved.shouldShow(context)) {
+        continue;
+      }
 
+      result.add(resolved);
       if (result.length >= limit) {
         break;
       }
