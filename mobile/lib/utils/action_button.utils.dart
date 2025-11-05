@@ -170,8 +170,8 @@ class ActionButtonBuilder {
   static const String quickActionStorageDelimiter = ',';
 
   static const List<ActionButtonType> _defaultQuickActionSeed = [
-    ActionButtonType.edit,
     ActionButtonType.share,
+    ActionButtonType.edit,
     ActionButtonType.archive,
     ActionButtonType.delete,
     ActionButtonType.removeFromAlbum,
