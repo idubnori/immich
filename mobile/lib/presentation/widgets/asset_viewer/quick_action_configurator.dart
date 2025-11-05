@@ -116,6 +116,7 @@ class _ViewerQuickActionConfiguratorState extends State<ViewerQuickActionConfigu
 
                   return ReorderableBuilder<ActionButtonType>(
                     onReorder: _onReorder,
+                    enableLongPress: false,
                     scrollController: gridController,
                     children: [
                       for (var i = 0; i < _order.length; i++)
@@ -180,45 +181,52 @@ class _QuickActionTile extends StatelessWidget {
         : theme.colorScheme.onSurface.withValues(alpha: 0.6);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 2),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: borderColor),
           color: backgroundColor,
         ),
-        child: Stack(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Positioned(top: 0, right: 0, child: Icon(Icons.drag_indicator_rounded, size: 18, color: indicatorColor)),
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: indicatorColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${index + 1}',
-                        style: theme.textTheme.labelSmall?.copyWith(color: indicatorColor, fontWeight: FontWeight.bold),
-                      ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: indicatorColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${index + 1}',
+                      style: theme.textTheme.labelSmall?.copyWith(color: indicatorColor, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Icon(type.iconData, size: 28, color: theme.colorScheme.onSurface),
-                  const SizedBox(height: 8),
-                  Text(
-                    type.localizedLabel(context),
-                    style: theme.textTheme.labelSmall,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                  ),
-                ],
+                ),
+                const Spacer(),
+                Icon(Icons.drag_indicator_rounded, size: 18, color: indicatorColor),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Icon(type.iconData, size: 28, color: theme.colorScheme.onSurface),
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                type.localizedLabel(context),
+                style: theme.textTheme.labelSmall,
+                textAlign: TextAlign.center,
+                maxLines: 3,
               ),
             ),
           ],
