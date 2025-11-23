@@ -657,6 +657,7 @@
             {isSelectionMode}
             {singleSelect}
             {monthGroup}
+            {album}
             onSelect={({ title, assets }) => handleGroupSelect(timelineManager, title, assets)}
             onSelectAssetCandidates={handleSelectAssetCandidates}
             onSelectAssets={handleSelectAssets}
